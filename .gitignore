@@ -1,0 +1,5 @@
+data/
+DTSC_2026/readers/data/
+*.zip
+*.csv
+*.txt
