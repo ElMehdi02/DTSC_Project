@@ -1,7 +1,7 @@
-import fasttext
+from sentence_transformers import SentenceTransformer
 import pandas as pd
 
-from dtsc330_26.readers import articles, grants
+from readers import articles, grants
 
 
 class MergedData:
@@ -9,9 +9,11 @@ class MergedData:
         self,
         grant_path: str = "data/RePORTER_PRJ_C_FY2025.zip",
         article_path: str = "data/pubmed25n1275.xml.gz",
-        ft_path: str = "data/cc.en.50.bin",
+        #ft_path: str = "data/cc.en.50.bin",
     ):
-        self.ft_model = fasttext.load_model(ft_path)
+        self.st_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+        #self.ft_model = fasttext.load_model(ft_path)
         art = articles.Articles(article_path)
         self.auth_df = art.get_authors().iloc[0:100]
 
@@ -23,17 +25,17 @@ class MergedData:
         # Before we cluster possible matches together
         # I'm going to limit to only 100 entries from each dataframe
 
-        self.auth_df["ft_forename_vec"] = self.auth_df["forename"].apply(
-            self.ft_model.get_sentence_vector
+        self.auth_df["st_forename_vec"] = self.auth_df["forename"].apply(
+            self.st_model.encode
         )
-        self.auth_df["ft_surname_vec"] = self.auth_df["surname"].apply(
-            self.ft_model.get_sentence_vector
+        self.auth_df["st_surname_vec"] = self.auth_df["surname"].apply(
+            self.st_model.encode
         )
-        self.grants_df["ft_forename_vec"] = self.grants_df["forename"].apply(
-            self.ft_model.get_sentence_vector
+        self.grants_df["st_forename_vec"] = self.grants_df["forename"].apply(
+            self.st_model.encode
         )
-        self.grants_df["ft_surname_vec"] = self.grants_df["surname"].apply(
-            self.ft_model.get_sentence_vector
+        self.grants_df["st_surname_vec"] = self.grants_df["surname"].apply(
+            self.st_model.encode
         )
 
         for i in range(0, len(self.auth_df), 100):
@@ -49,3 +51,7 @@ class MergedData:
 
 if __name__ == "__main__":
     x = get_merged_data()
+
+    for df in x.get_merged_data():
+        print(df.head())
+        break

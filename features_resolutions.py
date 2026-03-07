@@ -1,8 +1,9 @@
-import fasttext
+from sentence_transformers import SentenceTransformer
 import jarowinkler
-import np.linalg.norm
+import numpy as np
 import pandas as pd
 
+model = SentenceTransformer("all-MiniLM-L6-v2")
 
 def set_dist(x: str, y: str) -> float:
     """Return the fraction of words that overlap relative to the shorter
@@ -24,6 +25,27 @@ def set_dist(x: str, y: str) -> float:
     numer = len(words1.intersection(words2))
     return numer / denom
 
+def embedding_similarity(x: str, y:str) -> float:
+    """Return the cosine similarity between the sentence embeddings of two
+    strings.
+
+    Args:
+        x (str): string 1
+        y (str): string 2
+
+    Returns:
+        float: cosine similarity between the sentence embeddings
+    """
+    if pd.isna(x) or pd.isna(y):
+        return 0.0
+    
+    x = str(x)
+    y = str(y)
+
+    valueX = model.encode(x)
+    valueY = model.encode(y)
+
+    return np.dot(valueX, valueY) / (np.linalg.norm(valueX) * np.linalg.norm(valueY))
 
 class EntityResolutionFeatures:
     def features(self, comb_df: pd.DataFrame) -> pd.DataFrame:
@@ -44,13 +66,13 @@ class EntityResolutionFeatures:
             lambda row: set_dist(row["affiliation_x"], row["affiliation_y"]), axis=1
         )
 
-        comb_df["ft_fn_dist"] = comb_df.apply(
+        comb_df["emb_fn_dist"] = comb_df.apply(
             lambda row: np.linalg.norm(
                 row["ft_forename_vec_x"] - row["ft_forename_vec_y"]
             ),
             axis=1,
         )
-        comb_df["ft_sn_dist"] = comb_df.apply(
+        comb_df["emb_sn_dist"] = comb_df.apply(
             lambda row: np.linalg.norm(
                 row["ft_surname_vec_x"] - row["ft_surname_vec_y"]
             ),
@@ -62,8 +84,8 @@ class EntityResolutionFeatures:
                 "jw_fn_dist",
                 "jw_sn_dist",
                 "set_aff_dist",
-                "ft_fn_dist",
-                "ft_surname_dist",
+                "emb_fn_dist",
+                "emb_sn_dist",
             ]
         ]
     
