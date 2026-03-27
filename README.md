@@ -1,110 +1,108 @@
-# Entity Resolution Project  
-### Data Science Course – Duquesne University  
-**Instructor: Dr. Arthur Sugden**
-
----
+# Entity Resolution Project
 
 ## Overview
+This project focuses on entity resolution, which is the task of figuring out if two records refer to the same real-world person. The goal is to build a full pipeline starting from raw data all the way to a working model that can decide whether two records match or not.
 
-This repository was created as part of a Data Science course at **Duquesne University** taught by **Dr. Arthur Sugden**. Throughout the course, we explored practical and interesting topics in data science, including machine learning models, bias in data, feature engineering, blocking strategies, and classification systems.
-
-This project focuses on **Entity Resolution**, which is the task of determining whether two records refer to the same real-world person. The purpose of this repository is to demonstrate the complete workflow of working with a dataset — from data simulation to feature engineering, model training, and evaluation.
-
-This repository is intended to showcase both understanding of course concepts and clean project structure.
-
----
+The project includes data simulation, feature engineering, machine learning, and evaluation. It shows how different concepts like similarity, classification, and data processing come together in one system.
 
 ## Project Objective
-
 The main goals of this project are:
 
-- Simulate realistic entity resolution training data  
-- Engineer meaningful comparison features  
-- Train a supervised machine learning model  
-- Evaluate model performance  
-- Clearly document the entire process  
-
-The project reflects the material covered in class and demonstrates applied understanding of core data science techniques.
-
----
+- Create realistic training data for entity resolution
+- Build meaningful features to compare records
+- Train a machine learning model to classify matches
+- Evaluate how well the model performs
+- Organize everything in a clean and reusable way
 
 ## What is Entity Resolution?
+Entity resolution is the process of identifying when two records represent the same real-world entity, even if they look different.
 
-Entity Resolution (ER) is the process of identifying and matching records that refer to the same entity across datasets.
+For example:
 
-In this project, we simulate two phonebooks containing:
+- "Christine D Timko"
+- "C. Timko"
 
-- Forename  
-- Surname  
-- Address  
-- Phone number  
+These could refer to the same person, but the strings are not identical.
 
-The task is to determine whether two records from different phonebooks represent the same person.
+In this project, we simulate two datasets (like phonebooks) with fields such as:
 
----
+- Forename
+- Surname
+- Address
+- Phone number
+
+The task is to compare records across datasets and decide if they refer to the same person.
 
 ## Methodology
 
 ### 1. Data Simulation
+Since labeled data is not always available, training data is created manually and through simulation.
 
-Because labeled entity resolution datasets are not always available, training data is generated through simulation.
+- Matching pairs are created by copying records and adding small changes (typos, abbreviations, etc.)
+- Non-matching pairs are created by pairing different people randomly
 
-- Matching pairs are created by copying records and introducing small typographical errors.
-- Non-matching pairs are created by randomly sampling different individuals from separate phonebooks.
-
-This allows us to construct a supervised classification problem.
-
----
+This turns the problem into a supervised learning task.
 
 ### 2. Feature Engineering
+Raw text cannot be used directly by models, so we convert it into features.
 
-Raw text fields cannot be directly used by machine learning models. Therefore, comparison features are created, such as:
+Examples of features used:
 
-- Exact match indicators  
-- Prefix similarity  
-- String similarity scores  
-- Set-based overlap (when applicable)  
+- Exact match (0 or 1)
+- Prefix match (first few characters)
+- String similarity scores
+- Overlap between values
 
-These features convert text fields into numerical representations suitable for classification models.
-
----
+These features represent how similar two records are.
 
 ### 3. Model Training
+A classification model is trained to predict:
 
-A binary classification model is trained to predict:
+- `1` → same person
+- `0` → different people
 
-- **1 → Match (same person)**  
-- **0 → Non-match (different people)**  
-
-The model is evaluated using accuracy and other performance metrics.
-
----
+The model learns patterns from the features and uses them to make predictions on new data.
 
 ## Blocking Strategy
+Comparing every record with every other record is too slow when datasets get large.
 
-Comparing every record in phonebook 1 to every record in phonebook 2 would be computationally expensive. To reduce unnecessary comparisons, a simple blocking strategy can be used, such as grouping records by surname or zip code before performing detailed comparisons.
+To fix this, we use blocking:
 
-Blocking significantly improves scalability for larger datasets.
+- Only compare records that share something in common (like surname or zip code)
 
----
+This reduces the number of comparisons and makes the system faster.
+
+## Machine Learning Concepts Used
+This project applies several important machine learning ideas:
+
+- **Features vs labels** → features describe similarity, labels indicate match or not
+- **Classification** → predicting whether two records match
+- **Training data creation** → simulation, manual labeling, and generated examples
+- **Bias** → bad data can affect model performance
+- **Evaluation** → checking how accurate the model is
+
+## Entity Resolution with Similarity
+A key idea in this project is measuring similarity between records.
+
+Instead of exact matches, we compare:
+
+- Names (string similarity)
+- Addresses
+- Other attributes
+
+In more advanced approaches, text can also be converted into vectors (embeddings), and similarity is measured using distance between vectors.
 
 ## Learning Outcomes
+Through this project, I worked on:
 
-Through this project, I strengthened my understanding of:
-
-- Supervised machine learning  
-- Feature engineering  
-- String similarity techniques  
-- Dataset simulation  
-- Model evaluation  
-- Clean repository structure and documentation  
-
-This project represents applied learning from the Data Science course at Duquesne University.
-
----
+- Building a full machine learning pipeline
+- Creating and using features from raw data
+- Understanding how similarity works in real problems
+- Handling large comparisons with blocking
+- Training and evaluating models
+- Structuring code in a clean and reusable way
 
 ## Conclusion
+This project shows how to build an entity resolution system from scratch. It combines data processing, feature engineering, and machine learning to solve a real problem: identifying when two records refer to the same person.
 
-This repository demonstrates the complete process of building an entity resolution system from scratch. It reflects both conceptual understanding and practical implementation of the topics covered in class under the instruction of Dr. Arthur Sugden.
-
-The goal of this repository is to showcase coding ability, organization, and understanding of real-world data science workflows.
+The final result is a working system that can take two records and predict whether they match, using learned patterns from data.
