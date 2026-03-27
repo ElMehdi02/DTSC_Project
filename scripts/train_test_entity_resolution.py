@@ -1,5 +1,5 @@
-from merged_data import MergedData
-from features_resolutions import EntityResolutionFeatures
+from ds_project.merged_data import MergedData
+from ds_project.entity_resolution_features import EntityResolutionFeatures
 from classifiers.resolution_classifier import EntityResolutionClassifier
 
 
